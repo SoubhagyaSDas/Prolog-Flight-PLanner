@@ -1,0 +1,73 @@
+% Facts about flights(flight number, departure airport, arrival airport, departure time, arrival time)
+flight(6711, bos, ord, 815, 1005).
+flight(211, lga, ord, 700, 830).
+flight(203, lga, lax, 730, 1335).
+flight(92221, ewr, ord, 800, 920).
+flight(2134, ord, sfo, 930, 1345).
+flight(954, phx, dfw, 1655, 1800).
+flight(1176, sfo, lax, 1430, 1545).
+flight(205, lax, lga, 1630, 2210).
+flight(111, lga, bos, 645, 745).
+flight(222, bos, ewr, 750, 845).
+
+% Question 01:
+% Rule to find destinations reachable from a given airport
+destinations_from(Airport, Destinations) :-
+    findall(Destination, flight(_, Airport, Destination, _, _), Destinations).
+% Question: Where dies the flight from PHX go?
+% Query: ?- destinations_from(phx, Destinations).
+% Result: Destinations = [dfw]
+
+% Question 02:
+% Rule to check if there is a flight to a given destination
+flight_to(Destination) :-
+    flight(_, _, Destination, _, _).
+% Question: Is there a flight to PHX?
+% Query: ?- flight_to(phx).
+% Result: false
+
+% Question 03:
+% Rule to find the arrival time of a flight from a specific departure airport
+arrival_time(DepartureAirport, ArrivalTime) :-
+    flight(_, DepartureAirport, _, _, ArrivalTime).
+% Question: What time is does the flight from BOS land?
+% Query: ?- arrival_time(bos, ArrivalTime).
+% Result 1: ArrivalTime = 1005
+% Result 2: ArrivalTime = 845
+
+% Question 04:
+% Rule to check if Flight1 departs after Flight2 lands
+departs_after(Flight1, Flight2) :-
+    flight(Flight1, _, _, DepartureTime1, _),
+    flight(Flight2, _, _, _, ArrivalTime2),
+    DepartureTime1 > ArrivalTime2.
+% Question: Does the flight from ORD to SFO depart after the flight from EWR to ORD lands?
+% Query: ?- departs_after(2134, 92221).
+% Result: true
+
+% Question 05:
+% Rule to find the arrival times of flights to a specific airport
+arrival_times_to(Airport, ArrivalTimes) :-
+    findall(ArrivalTime, flight(_, _, Airport, _, ArrivalTime), ArrivalTimes).
+% Question: What time do the flights to ORD arrive?
+% Query: ?- arrival_times_to(ord, ArrivalTimes).
+% Result: ArrivalTimes = [1005, 830, 920]
+
+% Question 06:
+% Rule to find routes between two airports
+route(Start, End, Route) :-
+    route(Start, End, [Start], Route).
+
+route(Start, End, Visited, Route) :-
+    flight(_, Start, Next, _, _),
+    \+ member(Next, Visited),  % Ensure the next airport has not been visited yet
+    (Next = End ; route(Next, End, [Next|Visited], RouteRest)),
+    Route = [Start, Next | RouteRest].
+% Question: What are all the ways to get from LGA to LAX?
+% Query: ?- route(lga, lax, Route).
+% Result 1: Route = [lga, ord, ord, sfo, sfo, lax|_]
+% Result 2: Route = [lga, lax|_]
+% Result 3: Route = [lga, bos, bos, ord, ord, sfo, sfo, lax|_]
+% Result 4: Route = [lga, bos, bos, ewr, ewr, ord, ord, sfo, sfo, lax|_]
+
+

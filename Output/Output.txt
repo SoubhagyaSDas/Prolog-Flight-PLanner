@@ -1,0 +1,21 @@
+destinations_from(phx, Destinations).
+Destinations = [dfw]
+
+flight_to(phx).
+false
+
+arrival_time(bos, ArrivalTime).
+ArrivalTime = 1005
+ArrivalTime = 845
+
+departs_after(2134, 92221).
+true
+
+arrival_times_to(ord, ArrivalTimes).
+ArrivalTimes = [1005, 830, 920]
+
+route(lga, lax, Route).
+Route = [lga, ord, ord, sfo, sfo, lax|_]
+Route = [lga, lax|_]
+Route = [lga, bos, bos, ord, ord, sfo, sfo, lax|_]
+Route = [lga, bos, bos, ewr, ewr, ord, ord, sfo, sfo, lax|_]
