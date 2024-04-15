@@ -54,20 +54,20 @@ arrival_times_to(Airport, ArrivalTimes) :-
 % Result: ArrivalTimes = [1005, 830, 920]
 
 % Question 06:
-% Rule to find routes between two airports
+% Rule to find valid routes between two airports
 route(Start, End, Route) :-
     route(Start, End, [Start], Route).
 
 route(Start, End, Visited, Route) :-
-    flight(_, Start, Next, _, _),
+    flight(_, Start, Next, _, ArrivalTime),
     \+ member(Next, Visited),  % Ensure the next airport has not been visited yet
+    flight(_, Next, _, DepartureTime, _),
+    ArrivalTime < DepartureTime, % Ensure arrival is before departure
     (Next = End ; route(Next, End, [Next|Visited], RouteRest)),
     Route = [Start, Next | RouteRest].
+
 % Question: What are all the ways to get from LGA to LAX?
 % Query: ?- route(lga, lax, Route).
 % Result 1: Route = [lga, ord, ord, sfo, sfo, lax|_]
 % Result 2: Route = [lga, lax|_]
-% Result 3: Route = [lga, bos, bos, ord, ord, sfo, sfo, lax|_]
-% Result 4: Route = [lga, bos, bos, ewr, ewr, ord, ord, sfo, sfo, lax|_]
-
 
